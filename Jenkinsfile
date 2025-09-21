@@ -17,11 +17,11 @@ pipeline {
             }
         }
 
-        // stage('Build') {
-        //     steps {
-        //         bat 'mvn clean install -DskipTests'
-        //     }
-        // }
+        stage('Build') {
+            steps {
+                bat 'mvn clean install -DskipTests'
+            }
+        }
 
         // stage('SonarQube Analysis') {
         //     steps {
