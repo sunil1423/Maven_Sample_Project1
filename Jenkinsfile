@@ -24,7 +24,7 @@ pipeline {
                     bat """
                         %SCANNER_HOME%\\bin\\sonar-scanner ^
                         -Dsonar.projectKey=myproject-%BRANCH_NAME% ^
-                        -Dsonar.projectName=MyProject-%BRANCH_NAME% ^
+                        -Dsonar.projectName=Project-%BRANCH_NAME% ^
                         -Dsonar.sources=src ^
                         -Dsonar.java.binaries=target/classes
                     """
