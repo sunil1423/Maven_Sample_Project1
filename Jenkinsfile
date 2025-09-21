@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    // tools {
-    //     maven 'maven-3.9.9'   // Jenkins Maven tool (configure in Global Tools)
-    //     jdk 'JDK17'           // Jenkins JDK tool
-    // }
-
     environment {
         SCANNER_HOME = tool 'SonarScanner'
     }
@@ -40,9 +35,23 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 timeout(time: 2, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                    script {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Quality Gate failed!"
+                        }
+                    }
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo "SUCCESS: Pipeline completed successfully!"
+        }
+        failure {
+            echo "FAILED: Pipeline failed!"
         }
     }
 }
