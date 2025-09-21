@@ -51,12 +51,24 @@ pipeline {
 }
 
 
+//         stage('Quality Gate') {
+//             steps {
+//                 timeout(time: 2, unit: 'MINUTES') {
+//                     waitForQualityGate abortPipeline: true
+//                 }
+//             }
+//         }    
+//     }
+// }
         stage('Quality Gate') {
             steps {
-                timeout(time: 2, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                timeout(time: 5, unit: 'MINUTES') {  // sometimes HTML scans take longer
+                    script {
+                        def qg = waitForQualityGate()  // capture result
+                        if (qg.status != 'OK') {
+                            error "Quality Gate failed: ${qg.status}"
+                        }
+                    }
                 }
             }
         }
-    }
-}
