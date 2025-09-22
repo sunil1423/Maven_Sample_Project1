@@ -24,7 +24,7 @@ pipeline {
                     bat """
                         %SCANNER_HOME%\\bin\\sonar-scanner ^
                         -Dsonar.projectKey=my-java-project-%BRANCH_NAME% ^
-                        -Dsonar.projectName=MyJava-Project-%BRANCH_NAME% ^
+                        -Dsonar.projectName=MyJavaProject-%BRANCH_NAME% ^
                         -Dsonar.sources=src/main/java ^
                         -Dsonar.java.binaries=target/classes ^
                         -Dsonar.login=%SONAR_AUTH_TOKEN%
@@ -35,8 +35,10 @@ pipeline {
 
         stage('Quality Check') {
             steps {
-                script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+                timeout(time: 2, unit: 'MINUTES') {  // Timeout added
+                    script {
+                        waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+                    }
                 }
             }
         }
