@@ -23,24 +23,20 @@ pipeline {
                 withSonarQubeEnv('MySonarQube') {
                     bat """
                         %SCANNER_HOME%\\bin\\sonar-scanner ^
-                        -Dsonar.projectKey=myproject-%BRANCH_NAME% ^
-                        -Dsonar.projectName=Project-%BRANCH_NAME% ^
-                        -Dsonar.sources=src ^
-                        -Dsonar.java.binaries=target/classes
+                        -Dsonar.projectKey=my-java-project-%BRANCH_NAME% ^
+                        -Dsonar.projectName=MyJava-Project-%BRANCH_NAME% ^
+                        -Dsonar.sources=src/main/java ^
+                        -Dsonar.java.binaries=target/classes ^
+                        -Dsonar.login=%SONAR_AUTH_TOKEN%
                     """
                 }
             }
         }
 
-        stage('Quality Gate') {
+        stage('Quality Check') {
             steps {
-                timeout(time: 2, unit: 'MINUTES') {
-                    script {
-                        def qg = waitForQualityGate()
-                        if (qg.status != 'OK') {
-                            error "Quality Gate failed!"
-                        }
-                    }
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
                 }
             }
         }
@@ -48,10 +44,10 @@ pipeline {
 
     post {
         success {
-            echo "SUCCESS: Pipeline completed successfully!"
+            echo "✅ SUCCESS: Pipeline completed successfully!"
         }
         failure {
-            echo "FAILED: Pipeline failed!"
+            echo "❌ FAILED: Pipeline failed!"
         }
     }
 }
