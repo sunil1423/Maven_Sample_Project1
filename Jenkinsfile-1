@@ -1,0 +1,54 @@
+pipeline {
+   agent any
+   tools {
+       maven 'Maven-3.9.0'
+       jdk 'JDK-17'
+   }
+   environment {
+       SONAR_TOKEN = credentials('sonar-token')   // Jenkins credential for SonarQube token
+       SONAR_HOST_URL = 'http://<HOST_IP>:9000'  // Replace <HOST_IP> with your machine's IP
+   }
+   stages {
+       stage('Checkout') {
+           steps {
+               git branch: 'main',
+                   url: 'https://github.com/your-org/your-repo.git'
+           }
+       }
+       stage('Build & Test') {
+           steps {
+               sh 'mvn clean install'
+           }
+       }
+       stage('SonarQube Analysis') {
+           steps {
+               withSonarQubeEnv('MySonarQubeDocker') {  // Matches the Jenkins SonarQube config
+                   sh """
+                       mvn sonar:sonar \
+                         -Dsonar.projectKey=my-java-app \
+                         -Dsonar.projectName="Java App with Docker SonarQube" \
+                         -Dsonar.host.url=$SONAR_HOST_URL \
+                         -Dsonar.login=$SONAR_TOKEN
+                   """
+               }
+           }
+       }
+       stage('Quality Gate') {
+           steps {
+               echo "Waiting for SonarQube Quality Gate..."
+               // Increase timeout to handle slow analysis
+               timeout(time: 5, unit: 'MINUTES') {
+                   waitForQualityGate abortPipeline: true
+               }
+           }
+       }
+   }
+   post {
+       success {
+           echo '✅ Build and SonarQube Quality Gate passed!'
+       }
+       failure {
+           echo '❌ Build failed or Quality Gate not met!'
+       }
+   }
+}
