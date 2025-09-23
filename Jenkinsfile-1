@@ -32,10 +32,11 @@ pipeline {
                 withSonarQubeEnv('MySonarQube') {   // Must match Jenkins SonarQube config
                     bat """
                         %SCANNER_HOME%\\bin\\sonar-scanner ^
-                          -Dsonar.projectKey=my-java-app ^
-                          -Dsonar.projectName="Java App with Docker SonarQube" ^
-                          -Dsonar.host.url=%SONAR_HOST_URL% ^
-                          -Dsonar.login=%SONAR_TOKEN%
+                        -Dsonar.projectKey=my-java-project-%BRANCH_NAME% ^
+                        -Dsonar.projectName=MyJavaProject-%BRANCH_NAME% ^
+                        -Dsonar.sources=src/main/java ^
+                        -Dsonar.java.binaries=target/classes ^
+                        -Dsonar.login=%SONAR_AUTH_TOKEN%
                     """
                 }
             }
