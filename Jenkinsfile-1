@@ -8,7 +8,7 @@ pipeline {
     // }
 
     environment {
-        SONAR_TOKEN   = credentials('sonar-token')     // Jenkins credential for SonarQube token
+        // SONAR_TOKEN   = credentials('sonar-token')     // Jenkins credential for SonarQube token
         SONAR_HOST_URL = 'http://192.168.1.134:9000'   // Replace with your machine IP
         SCANNER_HOME  = tool 'SonarScanner'            // Jenkins SonarScanner tool
     }
